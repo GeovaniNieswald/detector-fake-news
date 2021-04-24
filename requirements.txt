@@ -1,0 +1,18 @@
+# Requires:
+#
+#   sudo apt-get install python3
+#   sudo apt-get install python3-pip
+#
+#   sudo pip3 install nltk
+
+# Executar:
+#
+#   python3
+#       import nltk
+#       nltk.download()
+#       d
+#       all
+
+#
+#
+#
