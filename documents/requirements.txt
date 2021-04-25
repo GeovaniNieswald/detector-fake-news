@@ -1,0 +1,17 @@
+# Requires:
+#
+#   sudo apt-get install python3
+#   sudo apt-get install python3-pip
+#
+#   sudo pip3 install pandas
+#   sudo pip3 install nltk
+#   sudo pip3 install gensim
+#   sudo pip3 install python-Levenshtein
+
+# Executar:
+#
+#   python3
+#       import nltk
+#       nltk.download()
+#       d
+#       all
