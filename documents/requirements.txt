@@ -8,6 +8,7 @@
 #   sudo pip3 install gensim
 #   sudo pip3 install python-Levenshtein
 #   sudo pip3 install tensorflow
+#   sudo pip3 install --upgrade tensorflow-gpu
 #   sudo pip3 install keras
 #   sudo pip3 install scikit-learn
 #   sudo pip3 install matplotlib
