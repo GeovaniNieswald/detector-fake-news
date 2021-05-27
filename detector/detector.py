@@ -1,8 +1,8 @@
 import pandas as pd
 import re, os
 import multiprocessing
-import matplotlib.pyplot as plt
 import numpy as np
+import datetime as dt
 import tensorflow as tf
 
 from nltk.corpus import stopwords
@@ -11,9 +11,11 @@ from nltk.tokenize import word_tokenize
 from gensim.models import Word2Vec
 
 from sklearn.model_selection import train_test_split
+from sklearn.metrics import confusion_matrix
 
 from tensorflow.keras.preprocessing.text import Tokenizer
 from tensorflow.keras.preprocessing.sequence import pad_sequences
+from tensorflow.keras.callbacks import TensorBoard
 from tensorflow.keras.models import Model
 from tensorflow.keras.layers import Input
 from tensorflow.keras.layers import Dense
@@ -30,6 +32,12 @@ utilizar_we = False
 
 # Local onde o modelo de rede neural será salvo
 lstm_model_filename = 'model/lstm.h5'
+
+# Local onde os logs de treinamento serão salvos
+logs_fit_dir = 'logs/fit/com_we' if utilizar_we == True else 'logs/fit/sem_we'
+
+# Local onde os resultados serão salvos
+resultados_filename = 'logs/output/com_we/resultados.txt' if utilizar_we == True else 'logs/output/sem_we/resultados.txt'
 
 # Quantidade máxima de palavras no vocabulário
 max_fatures = 10000
@@ -93,7 +101,7 @@ def pre_processar(dados):
     text_labels = pd.get_dummies(dados['label']).values
 
     # separa o dataset em dois conjuntos, um para treino e outro para testes
-    x_train, x_test, y_train, y_test = train_test_split(text_sequences, text_labels, test_size=0.20, random_state=42)
+    x_train, x_test, y_train, y_test = train_test_split(text_sequences, text_labels, test_size=0.10, random_state=42)
 
     return x_train, x_test, y_train, y_test, tokenizer
 
@@ -137,22 +145,23 @@ def criar_modelo():
     return modelo
 
 # Treina a rede neural
-def treinar_rede(modelo, x_train, y_train, x_test, y_test):
+def treinar_rede(modelo, x_train, y_train):
+    tensoarboard_callback = TensorBoard(log_dir=logs_fit_dir, histogram_freq=1)
+
     resultado_treinamento = modelo.fit(
         x_train, 
         y_train, 
-        validation_data=(x_test, y_test), 
+        validation_split=0.20,
         epochs=epochs, 
         batch_size=batch_size, 
         shuffle=True, 
-        verbose=1)
+        verbose=1,
+        callbacks=[tensoarboard_callback])
     
     return resultado_treinamento
 
-# Exibe informações para análise
-def analisar_modelo(modelo, resultado_treinamento, x_test, y_test):
-    scores = modelo.evaluate(x_test, y_test, verbose=0, batch_size=batch_size)
-
+# Realiza a análise do treinamento da rede neural
+def analisar_treino(resultado_treinamento):
     loss = resultado_treinamento.history['loss']
     val_loss = resultado_treinamento.history['val_loss']
 
@@ -166,36 +175,51 @@ def analisar_modelo(modelo, resultado_treinamento, x_test, y_test):
     except KeyError:
         val_accuracy = resultado_treinamento.history['val_acc']
 
-    print("")
-    print(modelo.summary())
+    arquivo = open(resultados_filename,'a')
 
-    print("")
-    print("loss")
+    arquivo.write("Perda no treinamento\n")
     for i, l in enumerate(loss):
-        print("epoch " + str(i + 1) + ": %.2f%%" % (l*100))
+        arquivo.write("epoch " + str(i + 1) + ": %.2f%%" % (l*100) + "\n")
 
-    print("")
-    print("val_loss")
+    arquivo.write("\n")
+    arquivo.write("Perda na validação\n")
     for i, val_l in enumerate(val_loss):
-        print("epoch " + str(i + 1) + ": %.2f%%" % (val_l*100))
-    
-    print("")
-    print("accuracy")
-    for i, acc in enumerate(accuracy):
-        print("epoch " + str(i + 1) + ": %.2f%%" % (acc*100))
+        arquivo.write("epoch " + str(i + 1) + ": %.2f%%" % (val_l*100) + "\n")
 
-    print("")
-    print("val_accuracy")
+    arquivo.write("\n")
+    arquivo.write("Acurácia no treinamento\n")
+    for i, acc in enumerate(accuracy):
+        arquivo.write("epoch " + str(i + 1) + ": %.2f%%" % (acc*100) + "\n")
+
+    arquivo.write("\n")
+    arquivo.write("Acurácia na validação\n")
     for i, val_acc in enumerate(val_accuracy):
-        print("epoch " + str(i + 1) + ": %.2f%%" % (val_acc*100))
+        arquivo.write("epoch " + str(i + 1) + ": %.2f%%" % (val_acc*100) + "\n")
+ 
+    arquivo.close()
+
+# Realiza a análise do modelo
+def analisar_modelo(modelo, x_test, y_test):
+    resultado_avaliacao = modelo.evaluate(x_test, y_test, verbose=0, batch_size=batch_size)
+    resultado_predicao  = modelo.predict(x_test)
     
-    print("")
-    print("Acc: %.2f%%" % (scores[1]*100))
-    print("")
+    rounded_predictions = np.argmax(resultado_predicao, axis=1)
+    rounded_labels      = np.argmax(y_test, axis=1)
+    tn, fp, fn, tp      = confusion_matrix(rounded_labels, rounded_predictions).ravel()
+
+    arquivo = open(resultados_filename,'a')
+    arquivo.write("Acurácia com dados de teste: %.2f%%" % (resultado_avaliacao[1]*100) + "\n\n")
+    arquivo.write("Matriz de confusão\n")
+    arquivo.write("tn: " + str(tn) + "\n")
+    arquivo.write("fp: " + str(fp) + "\n")
+    arquivo.write("fn: " + str(fn) + "\n")
+    arquivo.write("tp: " + str(tp) + "\n")
+    arquivo.close()
 
 # Loop para realizar a classificação de novas sentenças
 def detectar_fake_news(tokenizer, modelo):
     while True:
+        print("")
         sentence = input("input> ")
 
         if sentence == "exit":
@@ -210,29 +234,56 @@ def detectar_fake_news(tokenizer, modelo):
         if(np.argmax(analise) == 0):
             pred_proba = "%.2f%%" % (analise[0] * 100)
             print("Falso => ", pred_proba)
-            print("")
         elif (np.argmax(analise) == 1):
             pred_proba = "%.2f%%" % (analise[1] * 100)
             print("Verdadeiro => ", pred_proba)
-            print("")
 
 # -------------------------------------------------------------------------
 
 with tf.device("/gpu:0"):
+    arquivo = open(resultados_filename,'w')
+    arquivo.write("Resultados\n\n")
+    arquivo.close()
+
     treinar = not os.path.exists('./{}'.format(lstm_model_filename))
     dados = pd.read_csv('./dataset/news.csv')
 
     dados = normalizar(dados)
 
+    inicio = dt.datetime.now()
     x_train, x_test, y_train, y_test, tokenizer = pre_processar(dados)
+    fim = dt.datetime.now()
+
+    tempo_preprocessamento = fim - inicio
 
     modelo = criar_modelo()
 
+    print("")
+    print(modelo.summary())
+    print("")
+
     if treinar:
-        resultado_treinamento = treinar_rede(modelo, x_train, y_train, x_test, y_test)
+        inicio = dt.datetime.now()
+        resultado_treinamento = treinar_rede(modelo, x_train, y_train)
+        fim = dt.datetime.now()
+
+        tempo_treinamento = fim - inicio
+
         modelo.save_weights(lstm_model_filename)   
-        analisar_modelo(modelo, resultado_treinamento, x_test, y_test)
+        analisar_treino(resultado_treinamento)
     else:
+        tempo_treinamento = 0
         modelo.load_weights('./{}'.format(lstm_model_filename))
+
+    arquivo = open(resultados_filename,'a')
+    arquivo.write("Tempo de Pré-processamento\n")
+    arquivo.write(str(tempo_preprocessamento) + "\n\n")
+    arquivo.write("Tempo de Treinamento\n")
+    arquivo.write(str(tempo_treinamento) + "\n\n")
+    arquivo.write("Tempo de Pré-processamento + Tempo de Treinamento\n")
+    arquivo.write(str(tempo_preprocessamento + tempo_treinamento) + "\n")
+    arquivo.close()
+
+    analisar_modelo(modelo, x_test, y_test)
 
     detectar_fake_news(tokenizer, modelo)

@@ -1,0 +1,64 @@
+Resultados
+
+Perda no treinamento
+epoch 1: 57.96%
+epoch 2: 23.39%
+epoch 3: 9.51%
+epoch 4: 5.64%
+epoch 5: 3.02%
+epoch 6: 1.96%
+epoch 7: 0.69%
+epoch 8: 0.50%
+epoch 9: 0.20%
+epoch 10: 0.12%
+
+Perda na validação
+epoch 1: 37.60%
+epoch 2: 31.34%
+epoch 3: 35.44%
+epoch 4: 44.77%
+epoch 5: 48.34%
+epoch 6: 53.94%
+epoch 7: 61.91%
+epoch 8: 65.43%
+epoch 9: 66.38%
+epoch 10: 71.60%
+
+Acurácia no treinamento
+epoch 1: 72.54%
+epoch 2: 91.75%
+epoch 3: 97.08%
+epoch 4: 98.60%
+epoch 5: 99.19%
+epoch 6: 99.63%
+epoch 7: 99.87%
+epoch 8: 99.87%
+epoch 9: 99.96%
+epoch 10: 100.00%
+
+Acurácia na validação
+epoch 1: 85.45%
+epoch 2: 87.20%
+epoch 3: 86.68%
+epoch 4: 86.06%
+epoch 5: 82.03%
+epoch 6: 85.98%
+epoch 7: 86.33%
+epoch 8: 85.36%
+epoch 9: 85.63%
+epoch 10: 85.54%
+Tempo de Pré-processamento
+0:00:01.844502
+
+Tempo de Treinamento
+0:12:22.498762
+
+Tempo de Pré-processamento + Tempo de Treinamento
+0:12:24.343264
+Acurácia com dados de teste: 86.59%
+
+Matriz de confusão
+tn: 266
+fp: 50
+fn: 35
+tp: 283
