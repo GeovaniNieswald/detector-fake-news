@@ -107,7 +107,7 @@ def pre_processar(dados):
 
 # Word Embedding (Word2Vec) - Tenta adicionar palavras semelhantes ao texto
 def utilizar_word_embedding(text):
-    w2v = Word2Vec(text, window=5, min_count=5, negative=15, workers=multiprocessing.cpu_count())
+    w2v = Word2Vec(text, window=5, min_count=5, negative=15, workers=multiprocessing.cpu_count(), sg=1)
 
     for i, texto in enumerate(text):
         aux = []
