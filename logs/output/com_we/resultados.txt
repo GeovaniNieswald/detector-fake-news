@@ -1,64 +1,46 @@
 Resultados
 
 Perda no treinamento
-epoch 1: 54.95%
-epoch 2: 21.87%
-epoch 3: 14.00%
-epoch 4: 5.54%
-epoch 5: 4.17%
-epoch 6: 9.05%
-epoch 7: 3.76%
-epoch 8: 1.57%
-epoch 9: 1.13%
-epoch 10: 0.85%
+epoch 1: 22.70%
+epoch 2: 6.19%
+epoch 3: 3.08%
+epoch 4: 1.68%
+epoch 5: 1.30%
 
 Perda na validação
-epoch 1: 33.25%
-epoch 2: 38.75%
-epoch 3: 33.60%
-epoch 4: 38.64%
-epoch 5: 47.08%
-epoch 6: 39.23%
-epoch 7: 46.90%
-epoch 8: 51.49%
-epoch 9: 54.74%
-epoch 10: 65.04%
+epoch 1: 8.91%
+epoch 2: 6.91%
+epoch 3: 7.31%
+epoch 4: 9.19%
+epoch 5: 11.25%
 
 Acurácia no treinamento
-epoch 1: 73.36%
-epoch 2: 92.37%
-epoch 3: 95.70%
-epoch 4: 98.51%
-epoch 5: 98.82%
-epoch 6: 97.76%
-epoch 7: 98.84%
-epoch 8: 99.69%
-epoch 9: 99.74%
-epoch 10: 99.89%
+epoch 1: 90.97%
+epoch 2: 98.05%
+epoch 3: 99.11%
+epoch 4: 99.52%
+epoch 5: 99.59%
 
 Acurácia na validação
-epoch 1: 85.45%
-epoch 2: 83.61%
-epoch 3: 88.08%
-epoch 4: 85.89%
-epoch 5: 83.35%
-epoch 6: 85.98%
-epoch 7: 86.06%
-epoch 8: 85.01%
-epoch 9: 83.87%
-epoch 10: 85.54%
+epoch 1: 96.99%
+epoch 2: 97.93%
+epoch 3: 98.03%
+epoch 4: 97.34%
+epoch 5: 97.18%
+
 Tempo de Pré-processamento
-0:19:32.631486
+1:31:52.170805
 
 Tempo de Treinamento
-0:12:22.058461
+0:27:18.151334
 
 Tempo de Pré-processamento + Tempo de Treinamento
-0:31:54.689947
-Acurácia com dados de teste: 86.91%
+1:59:10.322139
+
+Acurácia com dados de teste: 97.59%
 
 Matriz de confusão
-tn: 270
-fp: 46
-fn: 37
-tp: 281
+tn: 1673
+fp: 61
+fn: 23
+tp: 1733

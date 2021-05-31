@@ -22,9 +22,9 @@ from tensorflow.keras.layers import Dense
 from tensorflow.keras.layers import Embedding
 from tensorflow.keras.layers import LSTM
 
-# TOTAL DE NOTÍCIAS (6335)
-#  FAKE (3164)
-#  REAL (3171)
+# TOTAL DE NOTÍCIAS (34.900)
+#  FAKE (17.450)
+#  REAL (17.450)
 
 # Utilizado para controlar se serão adicionadas palavras semelhantes 
 # a sentença que será classificada, utilizando para isso WE (Word2Vec)
@@ -40,7 +40,7 @@ logs_fit_dir = 'logs/fit/com_we' if utilizar_we == True else 'logs/fit/sem_we'
 resultados_filename = 'logs/output/com_we/resultados.txt' if utilizar_we == True else 'logs/output/sem_we/resultados.txt'
 
 # Quantidade máxima de palavras no vocabulário
-max_fatures = 10000
+max_words = 10000
 
 # Tamanho máximo de todas as sentenças
 max_sequence_length = 2000
@@ -49,10 +49,10 @@ max_sequence_length = 2000
 embed_dim = 128
 
 # Quantidade de vezes que o dataset passará pela rede neural
-epochs = 10
+epochs = 5
 
 # Número de amostras utilizadas em cada atualização do gradiente
-batch_size = 124
+batch_size = 248
 
 # Normalizar dados com NLTK
 def normalizar(dados):
@@ -91,7 +91,7 @@ def pre_processar(dados):
     if utilizar_we:
         text = utilizar_word_embedding(text)
 
-    tokenizer = Tokenizer(num_words=max_fatures)
+    tokenizer = Tokenizer(num_words=max_words)
     tokenizer.fit_on_texts(text)
 
     # transforma o texto - string em int
@@ -133,7 +133,7 @@ def criar_modelo():
     input_shape = (max_sequence_length,)
     model_input = Input(shape=input_shape, name="input", dtype='int32')    
 
-    embedding = Embedding(max_fatures, embed_dim, input_length=max_sequence_length, name="embedding")(model_input)
+    embedding = Embedding(max_words, embed_dim, input_length=max_sequence_length, name="embedding")(model_input)
     
     lstm = LSTM(embed_dim, dropout=0.2, recurrent_dropout=0.2, name="lstm")(embedding)
     
