@@ -201,7 +201,7 @@ def analisar_treino(resultado_treinamento):
 # Realiza a análise do modelo
 def analisar_modelo(modelo, x_test, y_test):
     resultado_avaliacao = modelo.evaluate(x_test, y_test, verbose=0, batch_size=batch_size)
-    resultado_predicao  = modelo.predict(x_test)
+    resultado_predicao  = modelo.predict(x_test, verbose=0, batch_size=batch_size)
     
     rounded_predictions = np.argmax(resultado_predicao, axis=1)
     rounded_labels      = np.argmax(y_test, axis=1)
@@ -272,8 +272,11 @@ with tf.device("/gpu:0"):
         modelo.save_weights(lstm_model_filename)   
         analisar_treino(resultado_treinamento)
     else:
-        tempo_treinamento = 0
+        inicio = dt.datetime.now()
         modelo.load_weights('./{}'.format(lstm_model_filename))
+        fim = dt.datetime.now()
+
+        tempo_treinamento = fim - inicio
 
     arquivo = open(resultados_filename,'a')
     arquivo.write("Tempo de Pré-processamento\n")
