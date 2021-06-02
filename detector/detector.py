@@ -216,27 +216,27 @@ def analisar_modelo(modelo, x_test, y_test):
     arquivo.write("tp: " + str(tp) + "\n")
     arquivo.close()
 
-# Loop para realizar a classificação de novas sentenças
+# Loop para realizar a detecção de Fake News em novas notícias
 def detectar_fake_news(tokenizer, modelo):
     while True:
         print("")
-        sentence = input("input> ")
+        noticia = input("noticia> ")
 
-        if sentence == "exit":
+        if noticia == "exit":
             break
         
-        new_text = [sentence]
+        new_text = [noticia]
         new_text = tokenizer.texts_to_sequences(new_text)
         new_text = pad_sequences(new_text, maxlen=max_sequence_length, dtype='int32', value=0)
 
         analise = modelo.predict(new_text, batch_size=1, verbose=2)[0]
 
         if(np.argmax(analise) == 0):
-            pred_proba = "%.2f%%" % (analise[0] * 100)
-            print("Falso => ", pred_proba)
+            probabilidade = "%.2f%%" % (analise[0] * 100)
+            print("Fake News => ", probabilidade)
         elif (np.argmax(analise) == 1):
-            pred_proba = "%.2f%%" % (analise[1] * 100)
-            print("Verdadeiro => ", pred_proba)
+            probabilidade = "%.2f%%" % (analise[1] * 100)
+            print("Notícia Verdadeira => ", probabilidade)
 
 # -------------------------------------------------------------------------
 
